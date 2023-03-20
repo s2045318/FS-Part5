@@ -4,7 +4,7 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
-  const [errorMessage, setErrorMessage] = useState('')
+  const [operationMessage, setoperationMessage] = useState('')
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('') 
@@ -41,19 +41,28 @@ const App = () => {
         'loggedBlogappUser', JSON.stringify(user)
       ) 
       blogService.setToken(user.token)
+      setoperationMessage(`G Welcome Back ${user.realname}`)
+      setTimeout(() => {
+        setoperationMessage(null)
+      }, 5000)
       setUser(user)
       setUsername('')
       setPassword('')
+      
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
+      setoperationMessage('R Wrong username of password')
       setTimeout(() => {
-        setErrorMessage(null)
+        setoperationMessage(null)
       }, 5000)
     }
   }
 
   const handleLogout = (event) => {
     event.preventDefault()
+    setoperationMessage(`G ${user.username} logged out`)
+      setTimeout(() => {
+        setoperationMessage(null)
+      }, 5000)
     window.localStorage.clear()
     blogService.setToken(null)
     setUser(null)
@@ -65,6 +74,10 @@ const App = () => {
       "author" : author,
       "url" : url
     }
+    setoperationMessage(`G a new blog ${title} by ${author} added`)
+      setTimeout(() => {
+        setoperationMessage(null)
+      }, 5000)
     await blogService.create(blog)
     setAuthor('')
     setTitle('')
@@ -156,8 +169,23 @@ const App = () => {
       </form>
     )
   }
+  const operationFlag = () => {
+    const flagStyle = {
+      color: operationMessage.charAt(0) === 'G' ? 'green' :'red',
+      background : operationMessage.charAt(0) === 'G' ? 'lightGreen' :'pink',
+      fontSize : 20,
+      borderStyle: 'solid',
+      borderRadius: 5,
+      padding: 10,
+      marginBottom: 10
+    }
+    return (
+      <p style={flagStyle}>{operationMessage.slice(2)}</p>
+    )
+  }
   return (
     <div>
+      {operationMessage && operationFlag()}
       {user === null && loginForm()}
       {user !== null && blogForm() }
       
