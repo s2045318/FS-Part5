@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Togglable from './components/Togglable'
+import LoginForm from './components/LoginForm'
+import BlogForm from './components/BlogForm'
 
 const App = () => {
   const [operationMessage, setoperationMessage] = useState('')
@@ -10,12 +13,11 @@ const App = () => {
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
 
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
 
   useEffect(() => {
-    refreshBlogs()
+    blogService.getAll().then(blogs =>
+      setBlogs( blogs )
+   )
   }, [])
 
   useEffect(() => {
@@ -26,11 +28,7 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [])
-  const refreshBlogs = () => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    ) 
-  }
+
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
@@ -67,107 +65,15 @@ const App = () => {
     blogService.setToken(null)
     setUser(null)
   }
-  const handleNewBlog = async (event) => {
-    event.preventDefault()
-    const blog = {
-      "title" : title,
-      "author" : author,
-      "url" : url
-    }
-    setoperationMessage(`G a new blog ${title} by ${author} added`)
-      setTimeout(() => {
-        setoperationMessage(null)
-      }, 5000)
-    await blogService.create(blog)
-    setAuthor('')
-    setTitle('')
-    setUrl('')
+  
 
-    refreshBlogs()
-  }
-  const logoutButton = () => (
-    <div>
-      <button onClick = {handleLogout}>Logout</button>
-    </div>
-  )
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      
-      <div>
-      <h2>log in to the application</h2>
-        username
-          <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
-          <input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type="submit">login</button>
-    </form>      
-  )
+  const addBlog = async (blogObject) => {
+    await blogService
+      .create(blogObject)
+      .then(returnedBlog => {
+        setBlogs(blogs.concat(returnedBlog))
+      })
 
-  const blogForm = () => {
-    console.log(user)
-    return (
-      <div>
-        <h2>blogs</h2>
-        <p>{user.realname} is logged in {logoutButton()}</p>
-        <div>{blogSubmitForm()}</div>
-          {blogs.map((blog, i) => 
-            <Blog
-              key={i}
-              blog={blog} 
-            />
-          )}
-      </div>
-    
-    )
-  }
-
-  const blogSubmitForm = () => {
-    return (
-      <form onSubmit={handleNewBlog}>
-        <div>
-          <h2>create new</h2>
-            title: 
-              <input
-                type="text"
-                value={title}
-                name="Title"
-                onChange={({ target }) => setTitle(target.value)}
-              />
-        </div>
-        <div>
-            author: 
-              <input
-                type="author"
-                value={author}
-                name="author"
-                onChange={({ target }) => setAuthor(target.value)}
-              />
-        </div>
-        <div>
-          url: 
-            <input 
-              type = "text"
-              value = {url}
-              name = "url"
-              onChange={({target}) => setUrl(target.value)}
-            />
-        </div>
-        <button type="submit">create</button>
-      </form>
-    )
   }
   const operationFlag = () => {
     const flagStyle = {
@@ -183,12 +89,43 @@ const App = () => {
       <p style={flagStyle}>{operationMessage.slice(2)}</p>
     )
   }
+  const sendOperationMessage = ({title, author}) => {
+    console.log('.')
+    console.log(title,author)
+    setoperationMessage(`G a new blog ${title} by ${author} added`)
+    
+    setTimeout(() => {
+      setoperationMessage(null)
+    }, 5000)
+  }
   return (
     <div>
+      <h1>Blogs !!!</h1>
       {operationMessage && operationFlag()}
-      {user === null && loginForm()}
-      {user !== null && blogForm() }
-      
+      {user === null ?
+        <Togglable buttonLabel="log in">
+          <LoginForm
+            username={username}
+            password={password}
+            handleUsernameChange={({ target }) => setUsername(target.value)}
+            handlePasswordChange={({ target }) => setPassword(target.value)}
+            handleSubmit={handleLogin}
+          />
+        </Togglable> :
+        <div>
+          <button onClick={handleLogout}>Logout</button>
+          <Togglable buttonLabel="new note">
+            <BlogForm createBlog={addBlog} sendOperationMessage = {sendOperationMessage}/>
+          </Togglable>
+          </div>
+      }
+        
+      {blogs.map((blog, i) => 
+            <Blog
+              key={i}
+              blog={blog} 
+            />
+          )}
     </div>
   )
 }
