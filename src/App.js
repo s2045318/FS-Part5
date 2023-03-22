@@ -19,6 +19,15 @@ const App = () => {
       setBlogs( blogs )
    )
   }, [])
+  /**useEffect(() => {
+    const getAll = async () => {
+      await blogService.getAll().then(blogs =>
+        setBlogs( blogs )
+    )
+    }
+    getAll()
+  }, [])
+ */
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -103,7 +112,7 @@ const App = () => {
       <h1>Blogs !!!</h1>
       {operationMessage && operationFlag()}
       {user === null ?
-        <Togglable buttonLabel="log in">
+        <Togglable buttonLabel1="log in">
           <LoginForm
             username={username}
             password={password}
@@ -114,7 +123,7 @@ const App = () => {
         </Togglable> :
         <div>
           <button onClick={handleLogout}>Logout</button>
-          <Togglable buttonLabel="new note">
+          <Togglable buttonLabel1="new note">
             <BlogForm createBlog={addBlog} sendOperationMessage = {sendOperationMessage}/>
           </Togglable>
           </div>
