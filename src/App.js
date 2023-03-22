@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef} from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -13,22 +13,15 @@ const App = () => {
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
 
-
+  const blogFormRef= useRef()
   useEffect(() => {
+    refreshBlogs()
+  }, [])
+  const refreshBlogs = () => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
    )
-  }, [])
-  /**useEffect(() => {
-    const getAll = async () => {
-      await blogService.getAll().then(blogs =>
-        setBlogs( blogs )
-    )
-    }
-    getAll()
-  }, [])
- */
-
+  }
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
@@ -77,10 +70,11 @@ const App = () => {
   
 
   const addBlog = async (blogObject) => {
+    blogFormRef.current.toggleVisibility()
     await blogService
       .create(blogObject)
       .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
+        refreshBlogs()
       })
 
   }
@@ -112,7 +106,7 @@ const App = () => {
       <h1>Blogs !!!</h1>
       {operationMessage && operationFlag()}
       {user === null ?
-        <Togglable buttonLabel1="log in">
+        <Togglable buttonLabel1="login">
           <LoginForm
             username={username}
             password={password}
@@ -122,8 +116,8 @@ const App = () => {
           />
         </Togglable> :
         <div>
-          <button onClick={handleLogout}>Logout</button>
-          <Togglable buttonLabel1="new note">
+          <button onClick={handleLogout}>logout</button>
+          <Togglable buttonLabel1="new note" ref={blogFormRef}>
             <BlogForm createBlog={addBlog} sendOperationMessage = {sendOperationMessage}/>
           </Togglable>
           </div>
