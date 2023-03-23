@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef} from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -9,8 +9,8 @@ import BlogForm from './components/BlogForm'
 const App = () => {
   const [operationMessage, setoperationMessage] = useState('')
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('') 
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   const blogFormRef= useRef()
@@ -20,7 +20,7 @@ const App = () => {
   const refreshBlogs = () => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-   )
+    )
   }
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -39,7 +39,7 @@ const App = () => {
       })
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
-      ) 
+      )
       blogService.setToken(user.token)
       setoperationMessage(`G Welcome Back ${user.realname}`)
       setTimeout(() => {
@@ -48,7 +48,6 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-      
     } catch (exception) {
       setoperationMessage('R Wrong username of password')
       setTimeout(() => {
@@ -56,22 +55,22 @@ const App = () => {
       }, 5000)
     }
   }
-  const deleteBlog = async (blog)=> {
+  const deleteBlog = async (blog) => {
     console.log('delete')
-    await blogService.remove(blog.id)
+    const response = await blogService.remove(blog.id)
+    console.log(response)
     setBlogs(blogs.filter(b => b.id !== blog.id))
     setoperationMessage(`R ${blog.title} by ${blog.author} deleted`)
-      setTimeout(() => {
-        setoperationMessage(null)
-      }, 5000)
-    
+    setTimeout(() => {
+      setoperationMessage(null)
+    }, 5000)
   }
   const handleLogout = (event) => {
     event.preventDefault()
     setoperationMessage(`G ${user.username} logged out`)
-      setTimeout(() => {
-        setoperationMessage(null)
-      }, 5000)
+    setTimeout(() => {
+      setoperationMessage(null)
+    }, 5000)
     window.localStorage.clear()
     blogService.setToken(null)
     setUser(null)
@@ -86,10 +85,7 @@ const App = () => {
     blogFormRef.current.toggleVisibility()
     await blogService
       .create(blogObject)
-      .then(returnedBlog => {
-        refreshBlogs()
-      })
-
+    refreshBlogs()
   }
   const operationFlag = () => {
     const flagStyle = {
@@ -105,11 +101,10 @@ const App = () => {
       <p style={flagStyle}>{operationMessage.slice(2)}</p>
     )
   }
-  const sendOperationMessage = ({title, author}) => {
+  const sendOperationMessage = ({ title, author }) => {
     console.log('.')
     console.log(title,author)
     setoperationMessage(`G a new blog ${title} by ${author} added`)
-    
     setTimeout(() => {
       setoperationMessage(null)
     }, 5000)
@@ -133,15 +128,14 @@ const App = () => {
           <Togglable buttonLabel1="create new blog" ref={blogFormRef}>
             <BlogForm createBlog={addBlog} sendOperationMessage = {sendOperationMessage}/>
           </Togglable>
-          </div>
+        </div>
       }
-    
-      {(blogs.sort((a,b) => b.likes - a.likes)).map((blog, i) => 
+      {(blogs.sort((a,b) => b.likes - a.likes)).map((blog, i) =>
         <Blog
           updateLikes={updateLikes}
           deleteBlog={deleteBlog}
           key={i}
-          blog={blog} 
+          blog={blog}
         />
       )}
     </div>
