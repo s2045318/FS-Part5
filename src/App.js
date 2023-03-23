@@ -67,8 +67,12 @@ const App = () => {
     blogService.setToken(null)
     setUser(null)
   }
-  
-
+  const updateLikes = async (blog) => {
+    console.log('blog:',blog)
+    await blogService.update(blog.id, blog)
+    refreshBlogs()
+  //  refreshBlogs()
+  }
   const addBlog = async (blogObject) => {
     blogFormRef.current.toggleVisibility()
     await blogService
@@ -125,6 +129,7 @@ const App = () => {
         
       {blogs.map((blog, i) => 
             <Blog
+              updateLikes={updateLikes}
               key={i}
               blog={blog} 
             />

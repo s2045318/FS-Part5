@@ -1,6 +1,7 @@
+
 import Togglable from "./Togglable"
 
-const Blog = ({blog}) => {
+const Blog = ({blog, updateLikes}) => {
 
   const blogStyle = {
     paddingTop: 10,
@@ -9,6 +10,13 @@ const Blog = ({blog}) => {
     borderWidth: 1,
     marginBottom: 5
   }
+  const handleLike = async (event) => {
+    blog.likes = blog.likes + 1
+    event.preventDefault()
+    console.log(blog, blog.id)
+    updateLikes(blog)
+  } 
+
   let username = "user: not found"
   try {
     username = `user: ${blog.user.username}`
@@ -20,7 +28,7 @@ const Blog = ({blog}) => {
     <div style={blogStyle}>
     {blog.title} {blog.author}
       <Togglable buttonLabel1="view" buttonLabel2="hide">
-        {blog.url} <br/> likes {blog.likes} <button>like</button> <br/> {username} <br/>
+        {blog.url} <br/> likes {blog.likes} <button onClick={handleLike}>like</button> <br/> {username} <br/>
       </Togglable>
     
   </div>
