@@ -56,7 +56,16 @@ const App = () => {
       }, 5000)
     }
   }
-
+  const deleteBlog = async (blog)=> {
+    console.log('delete')
+    await blogService.remove(blog.id)
+    setBlogs(blogs.filter(b => b.id !== blog.id))
+    setoperationMessage(`R ${blog.title} by ${blog.author} deleted`)
+      setTimeout(() => {
+        setoperationMessage(null)
+      }, 5000)
+    
+  }
   const handleLogout = (event) => {
     event.preventDefault()
     setoperationMessage(`G ${user.username} logged out`)
@@ -126,10 +135,11 @@ const App = () => {
           </Togglable>
           </div>
       }
-        
+    
       {(blogs.sort((a,b) => b.likes - a.likes)).map((blog, i) => 
         <Blog
           updateLikes={updateLikes}
+          deleteBlog={deleteBlog}
           key={i}
           blog={blog} 
         />

@@ -1,7 +1,7 @@
 
 import Togglable from "./Togglable"
 
-const Blog = ({blog, updateLikes}) => {
+const Blog = ({deleteBlog, blog, updateLikes}) => {
 
   const blogStyle = {
     paddingTop: 10,
@@ -16,6 +16,13 @@ const Blog = ({blog, updateLikes}) => {
     console.log(blog, blog.id)
     updateLikes(blog)
   } 
+  const handleDelete = async (event) => {
+    event.preventDefault()
+    if (window.confirm(`Remove Blog: ${blog.title} by ${blog.author}`)) {
+      deleteBlog(blog)
+    }
+  }
+
 
   let username = "user: not found"
   try {
@@ -23,16 +30,18 @@ const Blog = ({blog, updateLikes}) => {
   } catch {
     console.log("no username")
   }
-  console.log(username)
   return (
-    <div style={blogStyle}>
-    {blog.title} {blog.author}
-      <Togglable buttonLabel1="view" buttonLabel2="hide">
-        {blog.url} <br/> likes {blog.likes} <button onClick={handleLike}>like</button> <br/> {username} <br/>
-      </Togglable>
-    
+  <div style={blogStyle}>
+    <span>{blog.title} {blog.author} </span> 
+    <Togglable buttonLabel1="view" buttonLabel2="hide">
+      <div>{blog.url}</div>
+      <div>likes {blog.likes} <button onClick={handleLike}>like</button></div>
+      <div>{username}</div>
+      <button onClick={handleDelete}>delete</button>
+    </Togglable>
   </div>
-  )
+)
+
 
 }
 
