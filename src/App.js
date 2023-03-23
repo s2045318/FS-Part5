@@ -120,8 +120,8 @@ const App = () => {
           />
         </Togglable> :
         <div>
-          <button onClick={handleLogout}>logout</button>
-          <Togglable buttonLabel1="new note" ref={blogFormRef}>
+          <p>{user.realname} is logged <button onClick={handleLogout}>logout</button></p>
+          <Togglable buttonLabel1="create new blog" ref={blogFormRef}>
             <BlogForm createBlog={addBlog} sendOperationMessage = {sendOperationMessage}/>
           </Togglable>
           </div>
