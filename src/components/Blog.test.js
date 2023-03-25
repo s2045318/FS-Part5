@@ -55,10 +55,6 @@ describe('blog tests', () => {
   })
 
   test('new blog created correctly', async () => {
-    //test for new blog form
-    //should check that form calls event handler it received as props with right details
-    //when new blog created
-
     const createBlog = jest.fn()
     const sendOperationMessage = jest.fn()
     render(<BlogForm createBlog={createBlog} sendOperationMessage={sendOperationMessage}/>)
