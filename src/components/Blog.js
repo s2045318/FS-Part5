@@ -1,6 +1,13 @@
-import Togglable from './Togglable'
+import { useState } from 'react'
 
-const Blog = ({ deleteBlog, blog, updateLikes }) => {
+const Blog = ({ blog, updateLikes, deleteBlog }) => {
+  const [hideShow, sethideShow] = useState(false)
+  const toggleToggle = () => {
+    sethideShow((hideShow) => !hideShow)
+  }
+  if (!blog.user){
+    blog.user = { username: 'user not found' }
+  }
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -8,6 +15,7 @@ const Blog = ({ deleteBlog, blog, updateLikes }) => {
     borderWidth: 1,
     marginBottom: 5
   }
+
   const handleLike = async (event) => {
     blog.likes = blog.likes + 1
     event.preventDefault()
@@ -21,21 +29,32 @@ const Blog = ({ deleteBlog, blog, updateLikes }) => {
       deleteBlog(blog)
     }
   }
-  let username = 'user: not found'
-  try {
-    username = `user: ${blog.user.username}`
-  } catch { console.log('no username') }
-  return (
-    <div style={blogStyle}>
-      <span>{ blog.title } { blog.author } </span>
-      <Togglable buttonLabel1='view' buttonLabel2='hide'>
-        <div>{blog.url}</div>
-        <div>likes {blog.likes} <button onClick={ handleLike }>like</button></div>
-        <div>{username}</div>
-        <button onClick={ handleDelete }>delete</button>
-      </Togglable>
-    </div>
-  )
-}
+  const label = hideShow
+    ? 'hide'
+    : 'view'
 
+  if (hideShow) {
+    return (
+      <div style={blogStyle} className="detail-view">
+        <div>
+          <p>{blog.title} by {blog.author} <button id='toggle-toggle' onClick={toggleToggle}>{label}</button></p>
+          <p>{blog.url}</p>
+          <p>likes: {blog.likes} <button onClick={handleLike}>like</button></p>
+          <p>{blog.user.username}</p>
+          <button id="deletion" onClick={handleDelete}>delete</button>
+        </div>
+      </div>
+    )
+  }
+  else {
+    return(
+      <div style={blogStyle} className="default-view">
+        <div>
+          <p>{blog.title} by {blog.author} <button onClick={toggleToggle}>{label}</button></p>
+        </div>
+      </div>
+
+    )
+  }
+}
 export default Blog
