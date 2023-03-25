@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
 import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
+import BlogForm from './BlogForm'
 
 describe('blog tests', () => {
   test('renders by default title and author', () => {
@@ -51,5 +52,31 @@ describe('blog tests', () => {
     await userEvent.click(likeButton)
 
     expect(mockHandler.mock.calls).toHaveLength(2)
+  })
+
+  test('new blog created correctly', async () => {
+    //test for new blog form
+    //should check that form calls event handler it received as props with right details
+    //when new blog created
+
+    const createBlog = jest.fn()
+    const sendOperationMessage = jest.fn()
+    render(<BlogForm createBlog={createBlog} sendOperationMessage={sendOperationMessage}/>)
+
+    const inputTitle = screen.getByPlaceholderText('blog title...')
+    const inputAuthor = screen.getByPlaceholderText('blog author...')
+    const inputUrl = screen.getByPlaceholderText('blog url...')
+    const sendButton = screen.getByText('save')
+
+    await userEvent.type(inputTitle, 'title')
+    await userEvent.type(inputAuthor, 'author')
+    await userEvent.type(inputUrl, 'url')
+    await userEvent.click(sendButton)
+
+    expect(createBlog.mock.calls).toHaveLength(1)
+    expect(createBlog.mock.calls[0][0].title).toBe('title')
+    expect(createBlog.mock.calls[0][0].author).toBe('author')
+    expect(createBlog.mock.calls[0][0].url).toBe('url')
+
   })
 })
