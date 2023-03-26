@@ -67,5 +67,28 @@ describe('Blog app', function() {
       cy.contains('delete').click()
       cy.get('html').should('not.contain', 'Fridge Chocolate by Stacy')
     })
+    it.only('the wrong user cannot delete a blog', function() {
+      cy.contains('logout').click()
+      const user = {
+        username : 'wheatyBiscuits',
+        realname : 'max',
+        password : 'milk&sugar'
+      }
+      cy.request('POST', 'http://localhost:3003/api/users/',user)
+      cy.request('POST', 'http://localhost:3003/api/login',
+        user)
+        .then((response) => {
+          localStorage.setItem('loggedBlogAppUser', JSON.stringify(response.body))
+          cy.visit('http://localhost:3000')
+        })
+      cy.contains('login').click()
+      cy.get('#username').type(user.username)
+      cy.get('#password').type(user.password)
+      cy.get('#login-button').click()
+
+      cy.contains('view').click()
+      cy.contains('delete').click()
+      cy.get('html').should('contain', 'Fridge Chocolate by Stacy')
+    })
   })
 })
