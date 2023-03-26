@@ -49,7 +49,7 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setoperationMessage('R Wrong username of password')
+      setoperationMessage('R Wrong Credentials')
       setTimeout(() => {
         setoperationMessage(null)
       }, 5000)
