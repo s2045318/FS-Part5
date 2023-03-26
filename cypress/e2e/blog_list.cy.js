@@ -45,6 +45,9 @@ describe('Blog app', function() {
       cy.get('#password').type('salainen')
       cy.get('#login-button').click()
     })
+    afterEach(function() {
+      cy.contains('logout').click()
+    })
 
     it('A blog can be created', function() {
       cy.contains('create new blog').click()
@@ -53,7 +56,17 @@ describe('Blog app', function() {
       cy.get('#blog-url').type('http://boobobobobo.comcomcom')
       cy.get('#blog-submit').click()
       cy.get('html').should('contain', 'Fridge Chocolate by Stacy')
-      cy.contains('logout').click()
+    })
+    it('User can like a blog', function () {
+      cy.contains('create new blog').click()
+      cy.get('#blog-title').type('Fridge Chocolate')
+      cy.get('#blog-author').type('Stacy')
+      cy.get('#blog-url').type('http://boobobobobo.comcomcom')
+      cy.get('#blog-submit').click()
+      cy.get('html').should('contain', 'Fridge Chocolate by Stacy')
+      cy.contains('view').click()
+      cy.get('#like-button').click()
+      cy.contains('likes: 1')
     })
   })
 })
