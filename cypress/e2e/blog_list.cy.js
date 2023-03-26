@@ -67,7 +67,7 @@ describe('Blog app', function() {
       cy.contains('delete').click()
       cy.get('html').should('not.contain', 'Fridge Chocolate by Stacy')
     })
-    it.only('the wrong user cannot delete a blog', function() {
+    it('the wrong user cannot delete a blog', function() {
       cy.contains('logout').click()
       const user = {
         username : 'wheatyBiscuits',
@@ -90,5 +90,38 @@ describe('Blog app', function() {
       cy.contains('delete').click()
       cy.get('html').should('contain', 'Fridge Chocolate by Stacy')
     })
+
+    it('checks that the blogs are ordered according to likes with the blog with the most likes being first', function() {
+      cy.contains('create new blog').click()
+      cy.get('#blog-title').type('Raspberry Fields')
+      cy.get('#blog-author').type('Lindsey Wellington')
+      cy.get('#blog-url').type('http://jam,toast')
+      cy.get('#blog-submit').click()
+
+      // Like the first blog three times
+      cy.get('.default-view')
+        .contains('Fridge Chocolate')
+        .contains('view')
+        .click()
+      cy.contains('like').click()
+      cy.contains('like').click()
+      cy.contains('like').click()
+
+      // Like the second blog once
+      cy.get('.default-view')
+        .contains('Raspberry Fields')
+        .contains('view')
+        .click()
+      cy.contains('like').click()
+
+      // Check that the blogs are ordered by likes, with the most liked blog at the top
+      cy.get('#blog-item')
+        .eq(0)
+        .contains('Fridge Chocolate')
+      cy.get('#blog-item')
+        .eq(1)
+        .contains('Raspberry Fields')
+    })
+
   })
 })
